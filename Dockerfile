@@ -55,55 +55,48 @@ RUN make && make install
 RUN ldconfig
 
 WORKDIR /root
-RUN git clone -b release/v1.0 https://github.com/naushada/granada.git
+RUN git clone https://github.com/google/googletest/
+WORKDIR /root/googletest
+RUN mkdir build && cd build && cmake .. && make install
+RUN ldconfig
+WORKDIR /root
+RUN git clone https://github.com/naushada/granada.git
 RUN cd granada
 RUN mkdir ix86_64x
 WORKDIR /root/granada/ix86_64x
 RUN cmake .. && make
 
 #node installation
-#FROM node:latest AS gui-build
 RUN apt-get -y update
 RUN apt-get -y upgrade
-#RUN apt-get -y install build-essential
-#RUN apt-get -y install nodejs npm
-
-WORKDIR /root
-RUN mkdir webgui && cd webgui
-RUN mkdir webclient && cd webclient
-
-WORKDIR /root/webgui/webclient
-RUN git  clone https://github.com/naushada/webui.git
-RUN cd webui
-
 
 ########## installing dependencies node_module ######################
 RUN apt-get -y install curl
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get -y install nodejs
 
-WORKDIR /root/webgui/webclient/webui
+RUN npm install -g @angular/cli
+WORKDIR /root
+RUN mkdir webclient && cd webclient
+
+WORKDIR /root/webclient
+RUN git  clone https://github.com/naushada/lms.git webui
+RUN cd webui
+WORKDIR /root/webclient/webui
 
 RUN npm install
 RUN npm update
-######## copy some packages from local to container
-##############################
-
 
 ##### Compile the Angular webgui #################
 RUN npm install -g @angular/cli
-RUN ng add @angular/material
+#RUN ng add @angular/material
 RUN npm install xlsx
 RUN npm install file-saver
 RUN npm install jspdf
 RUN npm install jsbarcode
 RUN npm install pdfmake
-#RUN npm install @cds/angular --save
-#RUN npm install @cds/react --save
-#RUN ng add @clr/angular
-RUN npm install @clr/icons @clr/angular @clr/ui @cds/core
-
-WORKDIR /root/webgui/webclient/webui
+RUN npm install @cds/core @clr/angular @clr/ui --save
+WORKDIR /root/webclient/webui
 RUN ng build --configuration production --aot --base-href /webui/
 
 RUN cd /opt
@@ -112,7 +105,7 @@ RUN cd xAPP
 RUN mkdir webgui
 RUN cd webgui
 WORKDIR /opt/xAPP/webgui
-RUN cp -r /root/webgui/webclient/webui/dist/ui .
+RUN cp -r /root/webclient/webui/dist/webui .
 
 WORKDIR /opt/xAPP
 RUN mkdir granada
