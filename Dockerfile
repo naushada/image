@@ -18,13 +18,6 @@ RUN apt-get -y install libbson-dev
 RUN apt-get -y install libzstd-dev
 RUN apt-get -y install git
 
-#WORKDIR /root
-# SSL
-#RUN git clone -b OpenSSL_1_1_1-stable https://github.com/openssl/openssl.git
-#WORKDIR /root/openssl
-#RUN ./config --prefix=/usr/local/openssl-1.1.1-stable --openssldir=/usr/local/openssl-1.1.1-stable
-#RUN make install
-
 # get and build ACE
 WORKDIR /root
 RUN wget https://github.com/DOCGroup/ACE_TAO/releases/download/ACE%2BTAO-7_0_0/ACE+TAO-7.0.0.tar.gz
@@ -60,6 +53,7 @@ WORKDIR /root/googletest
 RUN mkdir build && cd build && cmake .. && make install
 RUN ldconfig
 WORKDIR /root
+
 RUN git clone https://github.com/naushada/granada.git
 RUN cd granada
 RUN mkdir ix86_64x
@@ -89,7 +83,6 @@ RUN npm update
 
 ##### Compile the Angular webgui #################
 RUN npm install -g @angular/cli
-#RUN ng add @angular/material
 RUN npm install xlsx
 RUN npm install file-saver
 RUN npm install jspdf
